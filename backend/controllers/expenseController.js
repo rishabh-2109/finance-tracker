@@ -1,4 +1,6 @@
-const  xlsx=require('xlsx');
+const  XLSX=require('xlsx');
+const fs=require("fs");
+const path=require("path")
 const User=require("../models/User");
 
 const Expense=require("../models/Expense");
@@ -14,7 +16,7 @@ try{
             message:"All fields are required"
         });
     }
-        const newIncome=new Expense({
+        const newExpense=new Expense({
             userId,
             icon,
             category,
@@ -63,12 +65,29 @@ exports.downloadExpenseExcel=async(req,res)=>{
         Amount:item.amount,
         Date:item.date,
     }));
-    const wb=writeXLSX.utils.book_new();
-    const ws=writeXLSX.utils.json_to_sheet(data);
-    writeXLSX.utils.book_append_sheet(wb,ws,"Expense");
-    res.download('expense_details.xlsx');
+    const wb=XLSX.utils.book_new();
+    const ws=XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb,ws,"Expense");
+   const filePath = path.join(__dirname, "../temp/expense_details.xlsx");
 
- }  catch(error){
-    res.status(500).json({message:"Server Error"});
- } 
+    // Ensure temp folder exists
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+
+    // Write file to disk
+    XLSX.writeFile(wb, filePath);
+
+    // Send file as download
+    res.download(filePath, "expense_details.xlsx", (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        res.status(500).json({ message: "Error downloading file" });
+      } else {
+        // Delete the file after sending
+        fs.unlinkSync(filePath);
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
