@@ -9,7 +9,7 @@ const expenseRoutes=require("./routes/expenseRoutes");
 const dashboardRoutes=require("./routes/dashboardRoutes");
 const app=express();
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 //middleware to handle cors
 
 app.use(
@@ -19,6 +19,7 @@ app.use(
         allowedHeaders:["Content-Type","Authorization"],
     })
 );
+
 
 app.use('/api/v1/auth',authRoutes);
 app.use("/api/v1/income",incomeRoutes);

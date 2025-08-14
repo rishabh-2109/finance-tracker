@@ -11,7 +11,7 @@ exports.getDashboardData=async(req,res)=>{
             {$match:{userId:userObjectId}},
             {$group:{_id:null,total:{$sum:"$amount"}}},
         ]);
-        console.log("totalIncome",{totalIncome,userId:isValidObjectId(userId)});
+        // console.log("totalIncome",{totalIncome,userId:isValidObjectId(userId)});
 
         const totalExpense=await Expense.aggregate([
              {$match:{userId:userObjectId}},
