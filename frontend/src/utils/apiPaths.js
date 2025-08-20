@@ -1,4 +1,5 @@
-export const BASE_URL="http://localhost:8000";
+const BASE1_URL=import.meta.env.MODE==="development"?"http://localhost:8000":"/"
+export const BASE_URL=BASE1_URL;
 
 
 export const API_PATHS={

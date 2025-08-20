@@ -10,8 +10,10 @@ const dashboardRoutes=require("./routes/dashboardRoutes");
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+__dirname=path.resolve();
 //middleware to handle cors
 
+if(process.env.NODE_ENV!=="production"){
 app.use(
     cors({
         origin:process.env.CLIENT_URL ||"*",
@@ -19,6 +21,9 @@ app.use(
         allowedHeaders:["Content-Type","Authorization"],
     })
 );
+}
+
+
 
 
 app.use('/api/v1/auth',authRoutes);
@@ -26,8 +31,13 @@ app.use("/api/v1/income",incomeRoutes);
 app.use("/api/v1/expense",expenseRoutes);
 app.use("/api/v1/dashboard",dashboardRoutes);
 
+if(process.env.NODE_ENV==="production"){
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.get('/*splat',(req,res)=>{
+    res.sendFile(path.join(__dirname,"../frontend/dist/index.html"));
+});
+}
 
-app.use("/uploads",express.static(path.join(__dirname,"uploads")));
 connectDB();
 const PORT=process.env.PORT || 5000;
 app.listen(PORT,()=>{
